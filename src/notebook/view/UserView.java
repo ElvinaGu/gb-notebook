@@ -17,7 +17,7 @@ public class UserView {
         Commands com;
 
         while (true) {
-            String command = prompt("Введите команду: ");
+            String command = prompt("Введите команду: ").toUpperCase();
             com = Commands.valueOf(command);
             if (com == Commands.EXIT) return;
             switch (com) {
@@ -35,6 +35,18 @@ public class UserView {
                         throw new RuntimeException(e);
                     }
                     break;
+                case READALL:
+                    System.out.println(userController.readAll());
+                    break;
+                case DELETE:
+                    String deleteId = prompt("Введите идентификатор пользователя, которого хотите удалить: ");
+                    try {
+                        userController.deleteUser(deleteId);
+                    } catch (Exception e) {
+                        throw new RuntimeException();
+                    }
+
+                    break;
                 case UPDATE:
                     String userId = prompt("Enter user id: ");
                     userController.updateUser(userId, createUser());
@@ -48,10 +60,20 @@ public class UserView {
         return in.nextLine();
     }
 
+    public String checkLine(String name) {
+        name = name.trim().replace(" ", "");
+        if (!name.isEmpty()) return name;
+        else {
+            System.out.println("Значение не может быть пустым.\n");
+            name = prompt("Введите корректные данные.\nИмя: ");
+            return checkLine(name);
+        }
+    }
+
     private User createUser() {
-        String firstName = prompt("Имя: ");
-        String lastName = prompt("Фамилия: ");
-        String phone = prompt("Номер телефона: ");
+        String firstName = checkLine(prompt("Имя: "));
+        String lastName = checkLine(prompt("Фамилия: "));
+        String phone = checkLine(prompt("Номер телефона: "));
         return new User(firstName, lastName, phone);
     }
 }
